@@ -619,26 +619,22 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
 
 
   /* ========  Theme Switcher Logic ========= */
-
-  // Theme Vars
   const userTheme = localStorage.getItem('theme');
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   // Initial Theme Check
   const themeCheck = () => {
-    // ... (logic to add/remove 'dark' class) ...
     if (userTheme === 'dark' || (!userTheme && systemTheme)) {
       document.documentElement.classList.add('dark');
     } else {
        document.documentElement.classList.remove('dark');
     }
-    updateHeaderLogoSource();
-    updateBrandLogosVisibility(); // Ensure this call is here
+    updateHeaderLogoSource(); // Now accessible
+    updateBrandLogosVisibility(); // Now accessible
   };
 
   // Manual Theme Switch
   const themeSwitch = () => {
-    // ... (logic to toggle 'dark' class and localStorage) ...
     if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
@@ -646,14 +642,16 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     }
-    updateHeaderLogoSource();
-    updateBrandLogosVisibility(); // Ensure this call is here
+    updateHeaderLogoSource(); // Now accessible
+    updateBrandLogosVisibility(); // Now accessible
   };
 
-  // ... (rest of theme switcher setup) ...
+  // Attach listener
   if (themeSwitcher) {
     themeSwitcher.addEventListener('click', themeSwitch);
   }
+
+  // Invoke initial check
   themeCheck();
 
 })(); // End of IIFE
