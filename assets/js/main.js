@@ -402,8 +402,8 @@ function renderPricingPlans(plans) {
 
         const brandHTML = `
           <a href="${fields.link || '#'}" target="_blank" rel="noopener noreferrer" class="brand-logo">
-             <img src="${logoDarkUrl}" alt="${fields.name || 'brand logo'}" class="dark-logo dark:hidden h-8">
-             <img src="${logoLightUrl}" alt="${fields.name || 'brand logo'}" class="light-logo hidden dark:block h-8">
+             <img src="${logoDarkUrl}" alt="${fields.name || 'brand logo'}" class="dark-logo brand-logo-light-mode h-8">
+             <img src="${logoLightUrl}" alt="${fields.name || 'brand logo'}" class="light-logo brand-logo-dark-mode dark:block h-8">
           </a>
         `;
          container.insertAdjacentHTML('beforeend', brandHTML);
@@ -462,6 +462,39 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
     }
   }
   // ======= End NEW Function =======
+  function updateBrandLogosVisibility() {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+
+    // Update logos in the main brands section
+    const brandLinks = document.querySelectorAll('#brands-container a'); // Uses the ID we added
+    brandLinks.forEach(link => {
+      // Select images using the NEW classes we added
+      const lightModeLogo = link.querySelector('.brand-logo-light-mode');
+      const darkModeLogo = link.querySelector('.brand-logo-dark-mode');
+
+      if (lightModeLogo) {
+        lightModeLogo.style.display = isDarkMode ? 'none' : 'block'; // Show if NOT dark mode
+      }
+      if (darkModeLogo) {
+        darkModeLogo.style.display = isDarkMode ? 'block' : 'none'; // Show if dark mode
+      }
+    });
+
+    // Update the "Made with TailGrids" logo specifically
+    const madeWithLogoContainer = document.querySelector('a[href="https://tailgrids.com/"]'); // Selector remains the same
+    if (madeWithLogoContainer) {
+        // Select images using the NEW classes
+        const lightModeLogo = madeWithLogoContainer.querySelector('.brand-logo-light-mode');
+        const darkModeLogo = madeWithLogoContainer.querySelector('.brand-logo-dark-mode');
+
+         if (lightModeLogo) {
+            lightModeLogo.style.display = isDarkMode ? 'none' : 'block';
+         }
+         if (darkModeLogo) {
+            darkModeLogo.style.display = isDarkMode ? 'block' : 'none';
+         }
+    }
+  }
 
 
   // ======= Sticky Header and Logo Change on Scroll =======
@@ -591,15 +624,19 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
 
   // Initial Theme Check
   const themeCheck = () => {
+    // ... (logic to add/remove 'dark' class) ...
     if (userTheme === 'dark' || (!userTheme && systemTheme)) {
       document.documentElement.classList.add('dark');
+    } else {
+       document.documentElement.classList.remove('dark');
     }
-    // Update logo source based on initial theme
-    updateLogoSource(); // MODIFIED: Call the dedicated function
+    updateHeaderLogoSource();
+    updateBrandLogosVisibility(); // Ensure this call is here
   };
 
   // Manual Theme Switch
   const themeSwitch = () => {
+    // ... (logic to toggle 'dark' class and localStorage) ...
     if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
@@ -607,19 +644,14 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     }
-    // Update logo source immediately after switching theme
-    updateLogoSource(); // MODIFIED: Call the dedicated function
-
-    // Add call to check brand logos if/when implementing that feature
-    // checkBrandLogos();
+    updateHeaderLogoSource();
+    updateBrandLogosVisibility(); // Ensure this call is here
   };
 
-  // Call theme switch on clicking button if it exists
+  // ... (rest of theme switcher setup) ...
   if (themeSwitcher) {
     themeSwitcher.addEventListener('click', themeSwitch);
   }
-
-  // Invoke theme check on initial load
   themeCheck();
 
 })(); // End of IIFE
