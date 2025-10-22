@@ -231,12 +231,10 @@ function renderPricingPlans(plans) {
         container.insertAdjacentHTML('beforeend', testimonialHTML);
     });
 
-    // IMPORTANT: Re-initialize or update Swiper AFTER adding slides
     if (window.testimonialSwiper && typeof window.testimonialSwiper.update === 'function') {
-        window.testimonialSwiper.update(); // Update existing instance
+        window.testimonialSwiper.update();
          window.testimonialSwiper.slideTo(0); // Go to first slide
     } else {
-         // Re-initialize if the instance was lost or not global
         window.testimonialSwiper = new Swiper(".testimonial-carousel", { /* Swiper options from index.html */ });
     }
  }
@@ -277,7 +275,7 @@ function renderFaqs(faqs) {
   }
 
   function renderTeamMembers(members) {
-      const container = document.querySelector('#team-members-container'); // Add ID
+      const container = document.querySelector('#team-members-container');
       if (!container || !members || members.length === 0) return;
       container.innerHTML = '';
 
@@ -354,7 +352,7 @@ function renderFaqs(faqs) {
   }
 
   function renderBlogPosts(posts) {
-     const container = document.querySelector('#blog-posts-container'); // Add ID
+     const container = document.querySelector('#blog-posts-container');
      if (!container || !posts || posts.length === 0) return;
      container.innerHTML = '';
 
@@ -389,14 +387,13 @@ function renderFaqs(faqs) {
   }
 
    function renderBrands(brands) {
-     const container = document.querySelector('#brands-container'); // Add ID
+     const container = document.querySelector('#brands-container'); 
      if (!container || !brands || brands.length === 0) return;
      container.innerHTML = ''; // Clear static brands
 
      brands.forEach(brand => {
         const fields = brand.fields;
-         // Determine which logo to show based on current theme (needs theme check logic)
-         // Simple approach: show dark logo by default, use JS to switch if dark mode is active
+
         const logoDarkUrl = fields.logoDark?.fields?.file?.url ? 'https:' + fields.logoDark.fields.file.url : '';
         const logoLightUrl = fields.logoLight?.fields?.file?.url ? 'https:' + fields.logoLight.fields.file.url : '';
 
@@ -408,7 +405,6 @@ function renderFaqs(faqs) {
         `;
          container.insertAdjacentHTML('beforeend', brandHTML);
      });
-      // Add logic here or in theme switcher to toggle logo visibility based on dark mode class on <html>
       function checkBrandLogos() {
          const isDarkMode = document.documentElement.classList.contains('dark');
          document.querySelectorAll('.brand-logo').forEach(logoLink => {
@@ -417,7 +413,6 @@ function renderFaqs(faqs) {
          });
       }
       checkBrandLogos(); // Call initially
-      // Also call checkBrandLogos() inside the themeSwitch function in main.js
    }
 
 // --- Trigger fetch on page load ---
@@ -430,7 +425,7 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
 (function () {
   "use strict";
 
-  // ======= Selectors =======
+
   const ud_header = document.querySelector(".ud-header");
   const header_logo = document.querySelector(".header-logo"); // Get logo element once
   const backToTop = document.querySelector(".back-to-top");
@@ -438,9 +433,8 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
   const navbarToggler = document.querySelector("#navbarToggler");
   const navbarCollapse = document.querySelector("#navbarCollapse");
 
-  // ======= NEW: Function to Update Logo Source =======
+
   function updateLogoSource() {
-    // Check if logo element exists first
     if (!header_logo) {
         console.warn("Header logo element not found.");
         return;
@@ -461,14 +455,14 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
       }
     }
   }
-  // ======= End NEW Function =======
+
   function updateBrandLogosVisibility() {
     const isDarkMode = document.documentElement.classList.contains('dark');
 
     // Update logos in the main brands section
     const brandLinks = document.querySelectorAll('#brands-container a'); // Uses the ID we added
     brandLinks.forEach(link => {
-      // Select images using the NEW classes we added
+
       const lightModeLogo = link.querySelector('.brand-logo-light-mode');
       const darkModeLogo = link.querySelector('.brand-logo-dark-mode');
 
@@ -497,9 +491,9 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
   }
 
 
-  // ======= Sticky Header and Logo Change on Scroll =======
+
   window.onscroll = function () {
-    // Check if header exists before accessing offsetTop
+
     if (!ud_header) return;
     const sticky = ud_header.offsetTop;
 
@@ -509,10 +503,8 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
       ud_header.classList.remove("sticky");
     }
 
-    // === Update logo based on theme and sticky state ===
-    updateLogoSource(); // MODIFIED: Call the dedicated function
+    updateLogoSource(); 
 
-    // === Show or hide the back-to-top button ===
     if (
       document.body.scrollTop > 50 ||
       document.documentElement.scrollTop > 50
@@ -523,7 +515,7 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
     }
   };
 
-  // ===== Responsive Navbar Toggler =====
+
    if (navbarToggler && navbarCollapse) { // Check if elements exist
      navbarToggler.addEventListener("click", () => {
        navbarToggler.classList.toggle("navbarTogglerActive");
@@ -531,7 +523,7 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
      });
    }
 
-  // ===== Close navbar-collapse when a link is clicked =====
+
   document
     .querySelectorAll("#navbarCollapse ul li:not(.submenu-item) a")
     .forEach((e) =>
@@ -615,8 +607,6 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
      };
   }
 
-
-  /* ========  Theme Switcher Logic ========= */
   const userTheme = localStorage.getItem('theme');
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -627,8 +617,8 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
     } else {
        document.documentElement.classList.remove('dark');
     }
-    updateLogoSource(); // Now accessible
-    updateBrandLogosVisibility(); // Now accessible
+    updateLogoSource(); 
+    updateBrandLogosVisibility(); 
   };
 
   // Manual Theme Switch
@@ -640,11 +630,10 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     }
-    updateLogoSource(); // Now accessible
-    updateBrandLogosVisibility(); // Now accessible
+    updateLogoSource(); 
+    updateBrandLogosVisibility(); 
   };
 
-  // Attach listener
   if (themeSwitcher) {
     themeSwitcher.addEventListener('click', themeSwitch);
   }
@@ -652,4 +641,4 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
   // Invoke initial check
   themeCheck();
 
-})(); // End of IIFE
+})();
