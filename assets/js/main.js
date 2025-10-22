@@ -629,7 +629,7 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
     } else {
        document.documentElement.classList.remove('dark');
     }
-    updateHeaderLogoSource(); // Now accessible
+    updateLogoSource(); // Now accessible
     updateBrandLogosVisibility(); // Now accessible
   };
 
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
     }
-    updateHeaderLogoSource(); // Now accessible
+    updateLogoSource(); // Now accessible
     updateBrandLogosVisibility(); // Now accessible
   };
 
