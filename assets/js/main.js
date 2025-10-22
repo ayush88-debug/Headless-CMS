@@ -198,8 +198,7 @@ function renderPricingPlans(plans) {
             if (i < (fields.rating || 0)) {
                 starsHTML += '<img src="./assets/images/testimonials/icon-star.svg" alt="star icon"/>';
             } else {
-                 // TODO: add grey stars for ratings less than 5
-                 starsHTML += '<img src="./assets/images/testimonials/icon-star-grey.svg" alt="star icon"/>';
+                
             }
         }
 
