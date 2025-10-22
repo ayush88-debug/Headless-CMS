@@ -430,11 +430,45 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
 (function () {
   "use strict";
 
-  // ======= Sticky
+  // ======= Selectors =======
+  const ud_header = document.querySelector(".ud-header");
+  const header_logo = document.querySelector(".header-logo"); // Get logo element once
+  const backToTop = document.querySelector(".back-to-top");
+  const themeSwitcher = document.getElementById('themeSwitcher');
+  const navbarToggler = document.querySelector("#navbarToggler");
+  const navbarCollapse = document.querySelector("#navbarCollapse");
+
+  // ======= NEW: Function to Update Logo Source =======
+  function updateLogoSource() {
+    // Check if logo element exists first
+    if (!header_logo) {
+        console.warn("Header logo element not found.");
+        return;
+    }
+
+    const isSticky = ud_header && ud_header.classList.contains("sticky"); // Check if header exists
+    const isDarkMode = document.documentElement.classList.contains("dark");
+
+    if (isDarkMode) {
+      // Dark mode: Always show white logo
+      header_logo.src = "assets/images/logo/logo-white.svg";
+    } else {
+      // Light mode: Show white on top, dark when sticky
+      if (isSticky) {
+        header_logo.src = "assets/images/logo/logo.svg";
+      } else {
+        header_logo.src = "assets/images/logo/logo-white.svg";
+      }
+    }
+  }
+  // ======= End NEW Function =======
+
+
+  // ======= Sticky Header and Logo Change on Scroll =======
   window.onscroll = function () {
-    const ud_header = document.querySelector(".ud-header");
+    // Check if header exists before accessing offsetTop
+    if (!ud_header) return;
     const sticky = ud_header.offsetTop;
-    const logo = document.querySelectorAll(".header-logo");
 
     if (window.pageYOffset > sticky) {
       ud_header.classList.add("sticky");
@@ -442,29 +476,10 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
       ud_header.classList.remove("sticky");
     }
 
-    if(logo.length) {
-      // === logo change
-      if (ud_header.classList.contains("sticky")) {
-        document.querySelector(".header-logo").src =
-          "assets/images/logo/logo.svg"
-      } else {
-        document.querySelector(".header-logo").src =
-          "assets/images/logo/logo-white.svg"
-      }
-    }
+    // === Update logo based on theme and sticky state ===
+    updateLogoSource(); // MODIFIED: Call the dedicated function
 
-    if (document.documentElement.classList.contains("dark")) {
-      if(logo.length) {
-        // === logo change
-        if (ud_header.classList.contains("sticky")) {
-          document.querySelector(".header-logo").src =
-            "assets/images/logo/logo-white.svg"
-        } 
-      }
-    }
-
-    // show or hide the back-top-top button
-    const backToTop = document.querySelector(".back-to-top");
+    // === Show or hide the back-to-top button ===
     if (
       document.body.scrollTop > 50 ||
       document.documentElement.scrollTop > 50
@@ -475,47 +490,67 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
     }
   };
 
-  // ===== responsive navbar
-  let navbarToggler = document.querySelector("#navbarToggler");
-  const navbarCollapse = document.querySelector("#navbarCollapse");
+  // ===== Responsive Navbar Toggler =====
+   if (navbarToggler && navbarCollapse) { // Check if elements exist
+     navbarToggler.addEventListener("click", () => {
+       navbarToggler.classList.toggle("navbarTogglerActive");
+       navbarCollapse.classList.toggle("hidden");
+     });
+   }
 
-  navbarToggler.addEventListener("click", () => {
-    navbarToggler.classList.toggle("navbarTogglerActive");
-    navbarCollapse.classList.toggle("hidden");
-  });
-
-  //===== close navbar-collapse when a  clicked
+  // ===== Close navbar-collapse when a link is clicked =====
   document
     .querySelectorAll("#navbarCollapse ul li:not(.submenu-item) a")
     .forEach((e) =>
       e.addEventListener("click", () => {
-        navbarToggler.classList.remove("navbarTogglerActive");
-        navbarCollapse.classList.add("hidden");
+        // Check if elements exist before modifying
+        if (navbarToggler) navbarToggler.classList.remove("navbarTogglerActive");
+        if (navbarCollapse) navbarCollapse.classList.add("hidden");
       })
     );
 
-  // ===== Sub-menu
+  // ===== Sub-menu =====
   const submenuItems = document.querySelectorAll(".submenu-item");
   submenuItems.forEach((el) => {
-    el.querySelector("a").addEventListener("click", () => {
-      el.querySelector(".submenu").classList.toggle("hidden");
-    });
+    const link = el.querySelector("a");
+    const submenu = el.querySelector(".submenu");
+    if (link && submenu) { // Check if elements exist
+      link.addEventListener("click", () => {
+        submenu.classList.toggle("hidden");
+      });
+    }
   });
 
-  // ===== Faq accordion
-  const faqs = document.querySelectorAll(".single-faq");
-  faqs.forEach((el) => {
-    el.querySelector(".faq-btn").addEventListener("click", () => {
-      el.querySelector(".icon").classList.toggle("rotate-180");
-      el.querySelector(".faq-content").classList.toggle("hidden");
-    });
-  });
+  // ===== Faq accordion (Example structure) =====
+  // const faqs = document.querySelectorAll(".single-faq");
+  // faqs.forEach((el) => {
+  //   const btn = el.querySelector(".faq-btn");
+  //   const icon = el.querySelector(".icon");
+  //   const content = el.querySelector(".faq-content");
+  //   if(btn && icon && content) { // Check elements exist
+  //      btn.addEventListener("click", () => {
+  //        icon.classList.toggle("rotate-180");
+  //        content.classList.toggle("hidden");
+  //      });
+  //   }
+  // });
 
-  // ===== wow js
-  new WOW().init();
+  // ===== wow js =====
+  // Ensure WOW is defined before initializing
+  if (typeof WOW !== 'undefined') {
+    try {
+      new WOW().init();
+    } catch (e) {
+      console.error("WOW.js initialization failed:", e);
+    }
+  } else {
+    console.warn('WOW.js library not found or loaded after main.js');
+  }
 
-  // ====== scroll top js
+
+  // ====== scroll top js ======
   function scrollTo(element, to = 0, duration = 500) {
+    if (!element) return; // Prevent errors if element doesn't exist
     const start = element.scrollTop;
     const change = to - start;
     const increment = 20;
@@ -523,19 +558,16 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
 
     const animateScroll = () => {
       currentTime += increment;
-
       const val = Math.easeInOutQuad(currentTime, start, change, duration);
-
       element.scrollTop = val;
-
       if (currentTime < duration) {
         setTimeout(animateScroll, increment);
       }
     };
-
     animateScroll();
   }
 
+  // Easing function
   Math.easeInOutQuad = function (t, b, c, d) {
     t /= d / 2;
     if (t < 1) return (c / 2) * t * t + b;
@@ -543,25 +575,27 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
     return (-c / 2) * (t * (t - 2) - 1) + b;
   };
 
-  document.querySelector(".back-to-top").onclick = () => {
-    scrollTo(document.documentElement);
-  };
+  // Attach scroll to top only if button exists
+  if(backToTop) {
+     backToTop.onclick = () => {
+       scrollTo(document.documentElement);
+     };
+  }
 
-    /* ========  themeSwitcher start ========= */
 
-  // themeSwitcher
-  const themeSwitcher = document.getElementById('themeSwitcher');
+  /* ========  Theme Switcher Logic ========= */
 
   // Theme Vars
   const userTheme = localStorage.getItem('theme');
-  const systemTheme = window.matchMedia('(prefers-color0scheme: dark)').matches;
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   // Initial Theme Check
   const themeCheck = () => {
     if (userTheme === 'dark' || (!userTheme && systemTheme)) {
       document.documentElement.classList.add('dark');
-      return;
     }
+    // Update logo source based on initial theme
+    updateLogoSource(); // MODIFIED: Call the dedicated function
   };
 
   // Manual Theme Switch
@@ -569,19 +603,23 @@ document.addEventListener('DOMContentLoaded', loadHomepageContent);
     if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
-      return;
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     }
+    // Update logo source immediately after switching theme
+    updateLogoSource(); // MODIFIED: Call the dedicated function
 
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('theme', 'dark');
+    // Add call to check brand logos if/when implementing that feature
+    // checkBrandLogos();
   };
 
-  // call theme switch on clicking buttons
-  themeSwitcher.addEventListener('click', () => {
-    themeSwitch();
-  });
+  // Call theme switch on clicking button if it exists
+  if (themeSwitcher) {
+    themeSwitcher.addEventListener('click', themeSwitch);
+  }
 
-  // invoke theme check on initial load
+  // Invoke theme check on initial load
   themeCheck();
-  /* ========  themeSwitcher End ========= */
-})();
+
+})(); // End of IIFE
