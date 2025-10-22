@@ -6,7 +6,6 @@ const client = contentful.createClient({
   accessToken: ACCESS_TOKEN,
 });
 
-console.log("Contentful client initialized:", client);
 
 
 
@@ -65,7 +64,6 @@ async function loadHomepageContent() {
     }
 
     const pageConfig = response.items[0].fields;
-    console.log("Fetched Page Config:", pageConfig); // For debugging
 
     // --- Update Static Content ---
     if (pageConfig.pageTitle) document.title = pageConfig.pageTitle; 
